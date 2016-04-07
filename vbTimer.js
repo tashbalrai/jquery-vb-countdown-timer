@@ -1,8 +1,32 @@
 /*
-A jQuery plugin to create timers.
-@author: Balrai
+A jQuery plugin to create timers using current time and the future date difference.
+@author: Vipan Balrai
+
+
+The MIT License (MIT)
+
+Copyright (c) 2016 Vipan Balrai
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 */
-(function($) {
+;(function($) {
   var _timers = {};
   var _defaults = {
     prefix: 'vbTimer',
@@ -208,43 +232,3 @@ A jQuery plugin to create timers.
   };
   
 })(jQuery);
-
-
-// var c = new Date();
-// var d1 = new Date('2016','03','05', '16', '23');
-
-// var ms = d1-c, th = 0, tm = 0, d = 0, h = 0, min = 0, sec = 0, mil = 0;
-
-// th = ms / 3600000;
-// tm = th * 60;
-// ts = tm * 60;
-
-// d = Math.floor(th / 24);
-// h = Math.floor(th % 24);
-// min = Math.floor(tm % 60);
-// sec = Math.floor(ts % 60);
-// mil = Math.floor((ts * 1000) % 1000);
-
-
-
-// var handle = setInterval(function() {
-  // console.log(d, ':', h, ':', min, ':', sec);
-  // sec -= 1;
-  
-  // if(sec < 0) {
-    // sec = 59;
-    // min -= 1;
-  // }
-  
-  // if(min < 0) {
-    // min = 59;
-    // h -= 1;
-  // }
-  
-  // if(h < 0) {
-    // h = 23;
-    // d -= 1;
-  // }
-// }, 1000);
-
-// clearInterval(handle);
