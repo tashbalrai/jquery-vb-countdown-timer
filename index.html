@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .countdown{
+        border: 2px dotted green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="myTimer" class="vb-timer">vb-timer1</div>
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="vbTimer.js"></script>
+    <script type="text/javascript">
+      jQuery(function () {
+        var Timer = jQuery('.vb-timer').balrai({
+          prefix: 'timers'
+        });
+        
+        Timer.create();
+        var myTimer = Timer.getTimer('myTimer');
+        myTimer.setDate('2016-04-07 17:33:00');
+        myTimer.start('show');
+        myTimer.setFormat({
+          delimiter: ' ',
+          wrapper: {
+            el: 'div',
+            elClass: 'timer-wrapper'
+          },
+          days:{
+            suffix:'<strong>d</strong>'
+          },
+          hours:{
+            suffix:'<strong>h</strong>'
+          },
+          minutes:{
+            suffix:'<strong>m</strong>'
+          },
+          seconds:{
+            el: 'h1',
+            suffix: '<strong>s</strong>'
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
