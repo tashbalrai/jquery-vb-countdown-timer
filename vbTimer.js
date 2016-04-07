@@ -1,6 +1,6 @@
 /*
-A jQuery plugin to create timers.
-@author: Balrai
+A jQuery plugin to create timers using current time and the future date.
+@author: Vipan Balrai
 */
 (function($) {
   var _timers = {};
@@ -206,45 +206,4 @@ A jQuery plugin to create timers.
       }
     }
   };
-  
 })(jQuery);
-
-
-// var c = new Date();
-// var d1 = new Date('2016','03','05', '16', '23');
-
-// var ms = d1-c, th = 0, tm = 0, d = 0, h = 0, min = 0, sec = 0, mil = 0;
-
-// th = ms / 3600000;
-// tm = th * 60;
-// ts = tm * 60;
-
-// d = Math.floor(th / 24);
-// h = Math.floor(th % 24);
-// min = Math.floor(tm % 60);
-// sec = Math.floor(ts % 60);
-// mil = Math.floor((ts * 1000) % 1000);
-
-
-
-// var handle = setInterval(function() {
-  // console.log(d, ':', h, ':', min, ':', sec);
-  // sec -= 1;
-  
-  // if(sec < 0) {
-    // sec = 59;
-    // min -= 1;
-  // }
-  
-  // if(min < 0) {
-    // min = 59;
-    // h -= 1;
-  // }
-  
-  // if(h < 0) {
-    // h = 23;
-    // d -= 1;
-  // }
-// }, 1000);
-
-// clearInterval(handle);
