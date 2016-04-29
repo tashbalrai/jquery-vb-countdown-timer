@@ -30,12 +30,12 @@ SOFTWARE.
   var _defaults = {
     prefix: 'vbTimer',
     level: 'days',
-    delimiter: ':',
+    delimiter: '<span class="cd-delimiter">:</span>',
     wrapper: {
       el: 'p',
       elClass: 'countdown'
     },
-    years:{
+    years: {
       el: 'span',
       elClass: 'cd-days',
       suffix: '',
@@ -70,35 +70,40 @@ SOFTWARE.
   var Timer = function (obj, options) {
     this.data = options;
     this._el = obj;
+    
+    if (this._el.data('date-future')) {
+      this._date = this._el.data('date-future');
+    } else if (this._el.data('url')) {
+      this._url = this._el.data('url');
+    } else {
+      throw new Error('Source date is required.');
+    }
+    
+    if (this._el.data('date-now')) { 
+      this._now = this._el.data('date-now');
+    }
+    
+    this._evPool = {'start': [], 'stop': [], 'complete': []};
   };
   
   Timer.prototype.start = function (show) {
     this._show = show === 'show'? true: false;
-    this.init();
-    this._handle = setInterval(function () {
-      this._ps -= 1;
-  
-      if(this._ps < 0) {
-        this._ps = 59;
-        this._pm -= 1;
-      }
-      
-      if(this._pm < 0) {
-        this._pm = 59;
-        this._ph -= 1;
-      }
-      
-      if(this._ph < 0) {
-        this._ph = 23;
-        this._pd -= 1;
-      }
-      
-      if( this.canStop() ) {
-        this.stop();
-      } else {
-        this._show && this._el.html(this.getHtml());
-      }
-    }.bind(this), 1000);
+    if (this._url) {
+      $.ajax(this._url)
+        .done(function (data, textStatus, jqXHR) {
+          data = JSON.parse(data);
+          if (data.current) {
+            this._now = data.current;
+          }
+          this._date = data.expiry;
+          this.init();
+        }.bind(this))
+        .fail(function (jqXHR, textStatus, errorThrown ) {
+          throw errorThrown;
+        }.bind(this));
+    } else {
+      this.init();
+    }
   };
   
   Timer.prototype.getHtml = function () {
@@ -140,8 +145,6 @@ SOFTWARE.
     return html;
   };
   
-  
-  
   Timer.prototype.setFormat = function (options) {
     this.data = $.extend(true, this.data, options);
   };
@@ -168,34 +171,117 @@ SOFTWARE.
     clearInterval(this._handle);
   };
   
-  Timer.prototype.setDate = function (tillDate) {
+  Timer.prototype.getDate = function (tillDate) {
     if (typeof tillDate === 'string') {
-      this._d = new Date(tillDate.replace(/-/ig,'/'));
+      return new Date(tillDate.replace(/-/ig,'/'));
     } else if (typeof tillDate === 'array' && tillDate.length >= 3) {
       var ds = '';
       for(var i=0; i<tillDate.length-1; i++) {
         ds = tillDate[i] + '-';
       }
       ds += tillDate[tillDate.length-1];
-      this._d = new Date(ds);
+      return new Date(ds);
     } else {
       throw new Error('Date string of type "YYYY-MM-DD HH:MM:SS" or a Date array is required.');
     }
   };
   
   Timer.prototype.init = function () {
-    var c = new Date();
-    this._ms = this._d - c;
+    if (this._now && this._now !== 'auto') {
+      this._c = this.getDate(this._now);
+    } else {
+      this._c = new Date();
+    }
+    
+    this._d = this.getDate(this._date);
+    
+    var d1, d2, diff, ts;
+
+// d1 = new Date('2015/04/29 10:06:00');
+// d2 = new Date('2016/04/29 12:36:37');
+
+// diff = d2 - d1;
+
+// ts = Math.floor(diff/1000);
+// console.log('Total Psecs: ', ts%60);
+// tm = Math.floor(ts/60);
+// console.log('Total Pmins: ', tm%60);
+// th = Math.floor(tm/60);
+// console.log('Total Phours: ', th%24);
+// td = Math.floor(th/24);
+// console.log('Total Pdays: ', td%30);
+// tmon = Math.floor(td/30);
+// console.log('Total Pmons: ', tmon%30);
+// ty = Math.floor(tmon/12);
+// console.log('Total Pyears: ', ty%12);
+    
+    this._ms = this._d - this._c;
     this._th = this._ms / 3600000;
     this._tm = this._th * 60;
     this._ts = this._tm * 60;
+    this._td = Math.floor(this._th / 24);
+    this._ty = Math.floor(this._td / 365);
+    
+    console.log(this._ms / 1000, this._ms % 1000);
     
     this._pd = Math.floor(this._th / 24);
     this._ph = Math.floor(this._th % 24);
     this._pm = Math.floor(this._tm % 60);
     this._ps = Math.floor(this._ts % 60);
     this._pms = Math.floor((this._ts * 1000) % 1000);
+    
+    this._handle = setInterval(function () {
+      this._ps -= 1;
+  
+      if(this._ps < 0) {
+        this._ps = 59;
+        this._pm -= 1;
+      }
+      
+      if(this._pm < 0) {
+        this._pm = 59;
+        this._ph -= 1;
+      }
+      
+      if(this._ph < 0) {
+        this._ph = 23;
+        this._pd -= 1;
+      }
+      
+      if( this.canStop() ) {
+        this.stop();
+        this.completed();
+      } else {
+        this._show && this._el.html(this.getHtml());
+      }
+    }.bind(this), 1000);
   };
+  
+  Timer.prototype.completed = function () {
+    for(var i=0, len = this._evPool.complete.length; i<len; i++) {
+      setTimeout(this._evPool.complete[i], 0);
+    }
+  };
+  
+  Timer.prototype.started = function () {
+    for(var i=0, len = this._evPool.start.length; i<len; i++) {
+      setTimeout(this._evPool.start[i], 0);
+    }
+  };
+  
+  Timer.prototype.stopped = function () {
+    for(var i=0, len = this._evPool.stop.length; i<len; i++) {
+      setTimeout(this._evPool.stop[i], 0);
+    }
+  };
+  
+  Timer.prototype.on = function (ev, cb) {
+    ev = ev.toLowerCase();
+    if (this._evPool.hasOwnProperty(ev)) {
+      this._evPool[ev].push(cb);
+    }
+    console.log(this._evPool);
+  }
   
   $.fn.balrai = function (options) {
     var $this = this;
@@ -229,4 +315,5 @@ SOFTWARE.
       }
     }
   };
+  
 })(jQuery);
